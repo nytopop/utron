@@ -43,7 +43,7 @@ func (m *Model) IsOpen() bool {
 
 // OpenWithConfig opens database connection with the settings found in cfg
 func (m *Model) OpenWithConfig(cfg *Config) error {
-	session, err := mgo.Dial(cfg.Databaseconn)
+	session, err := mgo.Dial(cfg.DatabaseConn)
 	if err != nil {
 		return err
 	}
