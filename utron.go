@@ -228,18 +228,10 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	baseApp.ServeHTTP(w, r)
 }
 
-// Migrate runs migrations on the global utron app.
-func Migrate() {
-	baseApp.model.AutoMigrateAll()
-}
-
 // Run runs a http server, serving the global utron App.
 //
 // By using this, you should make sure you followed the MVC pattern.
 func Run() {
-	if baseApp.cfg.Automigrate {
-		Migrate()
-	}
 	port := baseApp.cfg.Port
 	logThis.Info("starting server at ", baseApp.cfg.BaseURL)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), baseApp))

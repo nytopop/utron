@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/jinzhu/gorm"
+	mgo "gopkg.in/mgo.v2"
 
 	// support mysql, sqlite3 and postgresql
 	_ "github.com/go-sql-driver/mysql"
@@ -16,7 +16,7 @@ import (
 type Model struct {
 	models map[string]reflect.Value
 	isOpen bool
-	*gorm.DB
+	DB     *mgo.Database
 }
 
 // NewModelWithConfig creates a new model, and opens database connection based on cfg settings
@@ -43,10 +43,11 @@ func (m *Model) IsOpen() bool {
 
 // OpenWithConfig opens database connection with the settings found in cfg
 func (m *Model) OpenWithConfig(cfg *Config) error {
-	db, err := gorm.Open(cfg.Database, cfg.DatabaseConn)
+	session, err := mgo.Dial(cfg.Databaseconn)
 	if err != nil {
 		return err
 	}
+	db := session.DB(cfg.Database)
 	m.DB = db
 	m.isOpen = true
 	return nil
@@ -76,11 +77,4 @@ func (m *Model) Register(values ...interface{}) error {
 		m.models[k] = v
 	}
 	return nil
-}
-
-// AutoMigrateAll runs migrations for all the registered models
-func (m *Model) AutoMigrateAll() {
-	for _, v := range m.models {
-		m.AutoMigrate(v.Interface())
-	}
 }
